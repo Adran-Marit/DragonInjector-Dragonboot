@@ -32,13 +32,13 @@
 extern void pivot_stack(u32 stack_top);
 extern u8 get_payload_num(void);
 
+u8 test_image[8] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+
+u32 *fb;
+
 static inline void setup_gfx()
 {
-    u32 *fb = display_init_framebuffer();
-    gfx_init_ctxt(&g_gfx_ctxt, fb, 1280, 720, 720);
-    gfx_clear_buffer(&g_gfx_ctxt);
-    gfx_con_init(&g_gfx_con, &g_gfx_ctxt);
-    gfx_con_setcol(&g_gfx_con, 0xFFCCCCCC, 1, BLACK);
+    fb = display_init_framebuffer();
 }
 
 void find_and_launch_payload(const char *folder)
@@ -48,7 +48,7 @@ void find_and_launch_payload(const char *folder)
     FRESULT res = f_findfirst(&dir, &finfo, folder, "*.bin");
     if(res == FR_OK)
     {
-        gfx_printf(&g_gfx_con, "Launching %s/%s\n", folder, finfo.fname);
+        //gfx_printf(&g_gfx_con, "Launching %s/%s\n", folder, finfo.fname);
         size_t path_size = strlen(finfo.fname) + strlen(folder) + 2;
         char *payload_path = malloc(path_size);
         if(payload_path != NULL)
@@ -63,7 +63,7 @@ void find_and_launch_payload(const char *folder)
     }
     else
     {
-        gfx_printf(&g_gfx_con, "FatFs error code %d\n", res);
+        //gfx_printf(&g_gfx_con, "FatFs error code %d\n", res);
     }
 }
 
@@ -81,6 +81,8 @@ void ipl_main()
     display_backlight_pwm_init();
     display_backlight_brightness(100, 1000);
 
+    draw_image_1bpp(fb, test_image, 1, 1, 8, 7, BLACK, RED);
+
     u8 payload_num = get_payload_num() + 1;
 
     if(sd_mount())
@@ -94,7 +96,7 @@ void ipl_main()
         const char num_table[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8' };
         folder[sizeof(folder) - 2] = num_table[payload_num];
 
-        gfx_printf(&g_gfx_con, "Got payload number: %d\n", payload_num);
+        //gfx_printf(&g_gfx_con, "Got payload number: %d\n", payload_num);
 
         find_and_launch_payload(folder);
     }

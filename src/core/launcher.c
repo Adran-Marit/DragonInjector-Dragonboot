@@ -55,7 +55,7 @@ int launch_payload(char *path)
     FIL fp;
     if (f_open(&fp, path, FA_READ))
     {
-        gfx_printf(&g_gfx_con, "Cannot find %s\n", path);
+        //gfx_printf(&g_gfx_con, "Cannot find %s\n", path);
         return 1;
     }
 
@@ -64,14 +64,14 @@ int launch_payload(char *path)
 
     if (size > 0x30000)
     {
-        gfx_printf(&g_gfx_con, "payload too large!\n");
+        //gfx_printf(&g_gfx_con, "payload too large!\n");
         return 1;
     }
 
     if (f_read(&fp, (void *)RCM_PAYLOAD_ADDR, size, NULL))
     {
         f_close(&fp);
-        gfx_printf(&g_gfx_con, "Error loading %s\n", path);
+        //gfx_printf(&g_gfx_con, "Error loading %s\n", path);
         return 1;
     }
 
@@ -84,7 +84,7 @@ int launch_payload(char *path)
     reloc_patcher(ALIGN(size, 0x10));
     reconfig_hw_workaround(false, byte_swap_32(*(vu32 *)(RCM_PAYLOAD_ADDR + size - sizeof(u32))));
 
-    gfx_end_ctxt(&g_gfx_ctxt);
+    //gfx_end_ctxt(&g_gfx_ctxt);
 
     // Launch our payload.
     (*ext_payload_ptr)();
