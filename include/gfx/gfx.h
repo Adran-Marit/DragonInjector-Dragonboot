@@ -35,6 +35,6 @@
 #define STRIDE 720
 
 void gfx_set_pixel(u32 *fb, u32 x, u32 y, u32 color);
-void draw_image_1bpp(u32 *framebuf, u8 *image, u32 x, u32 y, u32 width, u32 height, u32 fore_color, u32 back_color);
+void draw_image_32bpp(u32 **framebuf, u32 *image, u32 x, u32 y, u32 width, u32 height);
 
 #endif

@@ -23,24 +23,31 @@
 #include "utils/util.h"
 #include "mem/heap.h"
 
+static u32 *switch_fb(u32 *framebuf)
+{
+    if(framebuf == (u32 *)0xC0000000)
+        return (u32 *)0xC03C0000;
+    else
+        return (u32 *)0xC0000000;
+}
+
 inline void gfx_set_pixel(u32 *framebuf, u32 x, u32 y, u32 color)
 {
     framebuf[y + (WIDTH - x) * STRIDE] = color;
 }
 
-void draw_image_1bpp(u32 *framebuf, u8 *image, u32 x, u32 y, u32 width, u32 height, u32 back_color, u32 fore_color)
+void draw_image_32bpp(u32 **framebuf, u32 *image, u32 x, u32 y, u32 width, u32 height)
 {
+    *framebuf = switch_fb(*framebuf);
+    memset(*framebuf, 0, 0x3C0000);
+
     for(int i = 0; i < height; i++)
     {
-        for(int j = 0; j < width / 8; j++)
+        for(int j = 0; j < width; j++)
         {
-            for(int k = 0; k < 8; k++)
-            {
-                u32 color = back_color;
-                if(image[i * width / 8 + j] & (0x80 >> k))
-                    color = fore_color;
-                gfx_set_pixel(framebuf, x + j + k, y + i, color);
-            }
+            gfx_set_pixel(*framebuf, x + j, y + i, image[i * width + j]);
         }
     }
+
+    set_active_framebuffer(*framebuf);
 }

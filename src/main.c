@@ -29,10 +29,11 @@
 #include "utils/fs_utils.h"
 #include "utils/btn.h"
 
+#include "test_image.h"
+
 extern void pivot_stack(u32 stack_top);
 extern u8 get_payload_num(void);
 
-u8 test_image[8] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 u32 *fb;
 
@@ -67,6 +68,21 @@ void find_and_launch_payload(const char *folder)
     }
 }
 
+void image_convert(u8 *in, u32 *out, size_t size, u32 back_color, u32 fore_color)
+{
+    for(int i = 0; i < size; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            u32 color = back_color;
+            if(in[i] & (0x80 >> j))
+                color = fore_color;
+
+            out[i * 8 + j] = color;
+        }
+    }
+}
+
 void ipl_main()
 {
     config_hw();
@@ -81,7 +97,13 @@ void ipl_main()
     display_backlight_pwm_init();
     display_backlight_brightness(100, 1000);
 
-    draw_image_1bpp(fb, test_image, 1, 1, 8, 7, BLACK, RED);
+    u32 *final_image = malloc(test_image_len * 0x20);
+
+    memset(final_image, 0, test_image_len * 0x20);
+
+    image_convert(test_image, final_image, test_image_len, BLACK, BLUE);
+
+    draw_image_32bpp(&fb, final_image, 1, 1, 391, 245);
 
     u8 payload_num = get_payload_num() + 1;
 
