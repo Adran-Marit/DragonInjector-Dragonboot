@@ -36,5 +36,6 @@
 
 void gfx_set_pixel(u32 *fb, u32 x, u32 y, u32 color);
 void draw_image_32bpp(u32 **framebuf, u32 *image, u32 x, u32 y, u32 width, u32 height);
+void draw_payload_screen(u32 **framebuf, u32 x, u32 y, u32 payload_num);
 
 #endif
