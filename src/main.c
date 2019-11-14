@@ -22,6 +22,8 @@
 #include "mem/heap.h"
 
 #include "soc/hw_init.h"
+#include "soc/t210.h"
+#include "soc/pmc.h"
 
 #include "core/launcher.h"
 
@@ -61,10 +63,15 @@ void find_and_launch_payload(const char *folder)
             launch_payload(payload_path);
         }
     }
-    else
+    else if(res == FR_NO_FILE)
     {
-        gfx_printf(&g_gfx_con, "FatFs error code %d\n", res);
+        gfx_printf(&g_gfx_con, "No payload found in %s!\n", folder);
     }
+    else if(res == FR_NO_PATH)
+    {
+        gfx_printf(&g_gfx_con, "Dragonboot folder not found!\nPlease create %s on your SD card and add your payload to it.\n", folder);
+    }
+    gfx_printf(&g_gfx_con, "FatFs error code %d\n", res);
 }
 
 void ipl_main()
@@ -98,4 +105,16 @@ void ipl_main()
 
         find_and_launch_payload(folder);
     }
+    else
+    {
+        gfx_printf(&g_gfx_con, "SD card not inserted!\n");
+    }
+
+    gfx_printf(&g_gfx_con, "Press any button to reboot into RCM.\n");
+    btn_wait();
+    gfx_printf(&g_gfx_con, "Rebooting to RCM in 5 seconds...\n");
+    msleep(5000);
+    PMC(APBDEV_PMC_SCRATCH0) |= 2;
+    PMC(APBDEV_PMC_CNTRL) = PMC_CNTRL_MAIN_RST;
+    while(1);
 }

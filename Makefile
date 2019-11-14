@@ -46,11 +46,8 @@ LDFLAGS = $(ARCH) -nostartfiles -lgcc -Wl,--nmagic,--gc-sections
 
 .PHONY: all clean
 
-all: directories $(TARGET).bin
+all: directories $(TARGET).lz4
 	@echo $(HFILES_BIN)
-	@echo -n "Payload size is "
-	@wc -c < $(OUTPUT)/$(TARGET).bin
-	@echo "Max size is 126296 Bytes."
 
 directories:
 	@mkdir -p "$(BUILD)"
@@ -65,8 +62,11 @@ clean:
 $(MODULEDIRS):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
-$(TARGET).bin: $(BUILD)/$(TARGET)/$(TARGET).elf $(MODULEDIRS)
-	$(OBJCOPY) -S -O binary $< $(OUTPUT)/$@
+$(TARGET).lz4: $(BUILD)/$(TARGET)/$(TARGET).bin
+	@lz4 -f -9 $(BUILD)/$(TARGET)/$(TARGET).bin $(OUTPUT)/$@
+
+$(BUILD)/$(TARGET)/$(TARGET).bin: $(BUILD)/$(TARGET)/$(TARGET).elf $(MODULEDIRS)
+	$(OBJCOPY) -S -O binary $< $@
 
 $(BUILD)/$(TARGET)/$(TARGET).elf: $(OBJS)
 	$(CC) $(LDFLAGS) -T $(SOURCEDIR)/link.ld $^ -o $@
