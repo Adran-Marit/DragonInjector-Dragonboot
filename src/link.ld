@@ -10,9 +10,10 @@ SECTIONS {
 		*(.data*);
 		*(.rodata*);
 	}
-	__payload_num = .;
-	. = ALIGN(0x10);
-	__ipl_end = .;
+    . = . + 4;
+    __payload_num = .;
+    . = ALIGN(0x10);
+    __ipl_end = .;
 	.bss : {
 		__bss_start = .;
 		*(COMMON)
