@@ -55,7 +55,6 @@ int launch_payload(char *path)
     FIL fp;
     if (f_open(&fp, path, FA_READ))
     {
-        gfx_printf(&g_gfx_con, "Cannot find %s\n", path);
         return 1;
     }
 

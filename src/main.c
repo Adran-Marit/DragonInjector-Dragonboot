@@ -48,7 +48,7 @@ void find_and_launch_payload(const char *folder)
     DIR dir;
     FILINFO finfo;
     FRESULT res = f_findfirst(&dir, &finfo, folder, "*.bin");
-    if(res == FR_OK)
+    if(res == FR_OK && (strlen(finfo.fname) != 0))
     {
         gfx_printf(&g_gfx_con, "Launching %s/%s\n", folder, finfo.fname);
         size_t path_size = strlen(finfo.fname) + strlen(folder) + 2;
@@ -63,15 +63,14 @@ void find_and_launch_payload(const char *folder)
             launch_payload(payload_path);
         }
     }
-    else if(res == FR_NO_FILE)
+    else if(strlen(finfo.fname) == 0)
     {
         gfx_printf(&g_gfx_con, "No payload found in %s!\n", folder);
     }
     else if(res == FR_NO_PATH)
     {
-        gfx_printf(&g_gfx_con, "Dragonboot folder not found!\nPlease create %s on your SD card and add your payload to it.\n", folder);
+        gfx_printf(&g_gfx_con, "Folder not found!\nPlease create %s on your SD card and add your payload to it.\n", folder);
     }
-    gfx_printf(&g_gfx_con, "FatFs error code %d\n", res);
 }
 
 void ipl_main()

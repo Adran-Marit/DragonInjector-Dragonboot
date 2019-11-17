@@ -27,11 +27,7 @@ bool sd_mount()
 	if (g_sd_mounted)
 		return true;
 
-	if (!sdmmc_storage_init_sd(&g_sd_storage, &g_sd_sdmmc, SDMMC_1, SDMMC_BUS_WIDTH_4, 11))
-	{
-        gfx_printf(&g_gfx_con, "%kFailed to init SD card.\nMake sure that it is inserted.\nOr that SD reader is properly seated!%k\n", 0xFFFFDD00, 0xFFCCCCCC);
-	}
-	else
+	if (sdmmc_storage_init_sd(&g_sd_storage, &g_sd_sdmmc, SDMMC_1, SDMMC_BUS_WIDTH_4, 11))
 	{
 		int res = 0;
 		res = f_mount(&g_sd_fs, "", 1);
@@ -39,10 +35,6 @@ bool sd_mount()
 		{
 			g_sd_mounted = 1;
 			return true;
-		}
-		else
-		{
-            gfx_printf(&g_gfx_con, "%kFailed to mount SD card (FatFS Error %d).\nMake sure that a FAT partition exists..%k\n", 0xFFFFDD00, res, 0xFFCCCCCC);
 		}
 	}
 
@@ -94,7 +86,6 @@ int sd_save_to_file(void *buf, u32 size, const char *filename)
 	res = f_open(&fp, filename, FA_CREATE_ALWAYS | FA_WRITE);
 	if (res)
 	{
-        gfx_printf(&g_gfx_con, "%kError (%d) creating file\n%s.\n%k\n", 0xFFFFDD00, res, filename, 0xFFCCCCCC);
 		return 1;
 	}
 

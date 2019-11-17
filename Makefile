@@ -63,7 +63,7 @@ $(MODULEDIRS):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
 $(TARGET).lz4: $(BUILD)/$(TARGET)/$(TARGET).bin
-	@lz4 -f -9 $(BUILD)/$(TARGET)/$(TARGET).bin $(OUTPUT)/$@
+	@lz4 -c -f -l -9 $(BUILD)/$(TARGET)/$(TARGET).bin | dd of=$(OUTPUT)/$@ bs=1 skip=8
 
 $(BUILD)/$(TARGET)/$(TARGET).bin: $(BUILD)/$(TARGET)/$(TARGET).elf $(MODULEDIRS)
 	$(OBJCOPY) -S -O binary $< $@

@@ -24,10 +24,7 @@
 #include "libs/fatfs/ff.h"			/* Declarations of FatFs API */
 #include "libs/fatfs/diskio.h"		/* Declarations of device I/O functions */
 
-#include "gfx/gfx.h"
-
-#define EFSPRINTF(text, ...) print_error(); gfx_printf(&g_gfx_con, "%k"text"%k\n", 0xFFFFFF00, 0xFFFFFFFF);
-//#define EFSPRINTF(...)
+#define EFSPRINTF(...)
 
 /*--------------------------------------------------------------------------
 
@@ -567,15 +564,6 @@ static const BYTE DbcTbl[] = MKCVTBL(TBL_DC, FF_CODE_PAGE);
    Module Private Functions
 
 ---------------------------------------------------------------------------*/
-
-/*-----------------------------------------------------------------------*/
-/* Print error header                                                    */
-/*-----------------------------------------------------------------------*/
-
-void print_error()
-{
-	gfx_printf(&g_gfx_con, "\n\n\n%k[FatFS] Error: %k", 0xFFFFFF00, 0xFFFFFFFF);
-}
 
 
 /*-----------------------------------------------------------------------*/
